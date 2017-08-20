@@ -29,73 +29,10 @@ import com.main.vo.NewsVO;
 public class Main {
 
 	public static void main(String[] args) throws UnsupportedEncodingException, IOException, ParseException, ClassNotFoundException, SQLException, InterruptedException {
-		// TODO Auto-generated method stub
-		
-		
-		
-		
-		
+
 		String sUrl;
 		URL url;
-		
-		//연합뉴스 카테고리 별 크롤링
-		/*
-		sUrl = "http://www.yonhapnews.co.kr/international/index.html?template=5550";
-		try {
-			url = new URL(sUrl);
-				URLConnection urlConn= url.openConnection();
-				InputStreamReader isr =new InputStreamReader(urlConn.getInputStream(), "UTF-8");
-				BufferedReader br = new BufferedReader(isr);
-			
-			StringBuilder sb = new StringBuilder();
-			String line;
-			 while ((line = br.readLine()) != null) {
-				 
-				 if(line.indexOf("<a href=") >0) 
-				 {
-					 if(line.lastIndexOf(".HTML\">")!=-1)
-			         System.out.println(line.substring(line.indexOf("<a href=")+9, line.indexOf(".HTML\">",line.indexOf("<a href="))+5));
-					 
-					 //TESTING
-					 
-//					 System.out.println(line);
-//					 System.out.println("first : " + line.indexOf("<a href=") + "last : " + line.lastIndexOf(".HTML\">"));
-				 }
-			    }
-		}catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-*/
-		
-		//연합뉴스 뉴스1개 url 에서 본문 크롤링
-		/*
-		sUrl = "http://www.yonhapnews.co.kr/bulletin/2016/08/26/0200000000AKR20160826178300109.HTML?from=search";
-		try {
-			url = new URL(sUrl);
-			InputStreamReader isr = new InputStreamReader(url.openStream(), "UTF-8"); 
-			BufferedReader br = new BufferedReader(isr);
-			
-			StringBuilder sb = new StringBuilder();
-			String line;
-			boolean con=false;
-			while ((line = br.readLine()) != null) {
-//			System.out.println(line);
-				if(line.indexOf("<!-- 기사// -->")>=0) con =true;
-				if(line.indexOf("<!-- //기사 -->")>=0) con= false;
-				if(con)
-				System.out.println(line);
-//				System.out.println(line.substring(line.indexOf("<p>"), line.indexOf("</p>",line.indexOf("<p>"))));
-			}
-		}catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
-		*/
-		//뉴스 검색 나라이름으로
-	
-		
 		NewsCrawler mycrawler = new NewsCrawler();
-		//System.out.println(mycrawler.fn_countryCrawl());
 		List<String> countrylist = Arrays.asList(
 				 "터키", "투르크 메니스탄", "알바니아", "우간다", "우크라이나", "마케도니아", "이집트", "영국", "탄자니아", "벨리즈", "미국", "부르키나 파소", 
 				"우루과이", "우즈베키스탄", "베네수엘라", "예멘 아랍 공화국", "잠비아", "솔로몬 제도", "브루나이"
@@ -105,14 +42,11 @@ public class Main {
 		{	
 			List<NewsVO> newsList = new ArrayList<NewsVO>();
 			String pageSize="";
-			//System.out.println("!!" + country);
 			if(country.indexOf(" ")>=0)
 			country=country.replace(" ", "%20");
-			//if(country.equals("카메룬")){
-				
+
 			sUrl = "http://srch.yonhapnews.co.kr/NewSearch.aspx?callback=Search.SearchPreCallback&query="+ country+ "&ctype=A&page_size=1&channel=basic_kr";
 			String referer = "http://www.yonhapnews.co.kr/home09/7091000000.html?query=" + country+ "&ctype=A";
-			//System.out.println("@@" + sUrl);
 			try {
 				url = new URL(sUrl);
 				URLConnection urlConn= url.openConnection();
@@ -123,7 +57,6 @@ public class Main {
 				StringBuilder sb = new StringBuilder();
 				String line;
 				while ((line = br.readLine()) != null) {
-					//System.out.println(line);
 						if(line.indexOf("totalCount")>=0)
 						{
 							pageSize=line.substring(line.indexOf("totalCount")+13,line.lastIndexOf(","));
@@ -137,7 +70,6 @@ public class Main {
 			
 				sUrl = "http://srch.yonhapnews.co.kr/NewSearch.aspx?callback=Search.SearchPreCallback&query="+ country+ "&ctype=A&page_size="+pageSize+"&channel=basic_kr";
 				referer = "http://www.yonhapnews.co.kr/home09/7091000000.html?query=" + country+ "&ctype=A";
-				//System.out.println("@@" + sUrl);
 				try {
 					url = new URL(sUrl);
 					URLConnection urlConn= url.openConnection();
@@ -148,8 +80,7 @@ public class Main {
 					StringBuilder sb = new StringBuilder();
 					String line;
 				while ((line = br.readLine()) != null) {
-					//System.out.println(line);
-					
+
 					if(line.indexOf("SearchPreCallback")>=0)
 						sb.append(line.substring(line.indexOf("SearchPreCallback")+18));
 					else if(line.indexOf("});")>=0)
@@ -158,14 +89,11 @@ public class Main {
 						sb.append(line);
 						
 				}
-				//System.out.println(sb);
-				
-				//System.out.println("!!");
+
 				JSONParser parser = new JSONParser();
 				JSONObject object = (JSONObject) parser.parse(sb.toString());
 				object =  (JSONObject) object.get("KR_ARTICLE");
 				JSONArray articleInfoArray = (JSONArray) object.get("result");
-				//System.out.println(articleInfoArray.toString());
 				for(int i=0; i< articleInfoArray.size(); i++ )
 				{
 					JSONObject articleObject = (JSONObject) articleInfoArray.get(i);
@@ -183,12 +111,9 @@ public class Main {
 					+"0200000000"
 					+ news.getContent_id()
 					+".HTML?from=search");
-					//System.out.println(news.getTitle());
-					//System.out.println(news.getUrl());
 					newsList.add(news);
 				}
 			
-				//System.out.println(sb);
 			}catch (Exception e) {
 				continue;
 			}
@@ -207,27 +132,22 @@ public class Main {
 						boolean con=false;
 						boolean scriptskip =false;
 						while ((line = br.readLine()) != null) {
-		//				System.out.println(line);
 							if(line.indexOf("<!-- 기사// -->")>=0){ con =true; continue;}
 							if(line.indexOf("<!-- //기사 -->")>=0){ con= false; break;}
 							if(con && line.indexOf("<script")>=0){ con=false; scriptskip=true;}
 							if(scriptskip && line.indexOf("/script>")>=0){ con=true; scriptskip = false; continue;}
 							if(con)
 							sb.append(line);
-		//					System.out.println(line.substring(line.indexOf("<p>"), line.indexOf("</p>",line.indexOf("<p>"))));
 						}
 						news.setReal_text_body(sb.toString()); 
 					}catch (Exception e) {
 						continue;
 					}
-			}//newslist for문 끝
-			System.out.println(country + "is" + mycrawler.fn_countryCrawl(newsList));
-			
-		//}//이탈리아 끝
-		}//for문 끝
+			}
+
+		}
 	
 
-		System.out.println("complete!!");
 	}
 	
 }

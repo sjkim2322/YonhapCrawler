@@ -24,7 +24,7 @@ import com.mysql.jdbc.PreparedStatement;
 public class NewsCrawler {
 public String fn_countryCrawl(List<NewsVO> curnewslist) throws UnsupportedEncodingException, IOException, ParseException, SQLException, ClassNotFoundException{
 		
-		ArrayList<NewsVO> newslist = (ArrayList<NewsVO>) curnewslist; // �닔吏묓븷 肄붾뱶 諛� �솕�룓�씠由� 諛곗뿴 珥덇린�솕
+		ArrayList<NewsVO> newslist = (ArrayList<NewsVO>) curnewslist;
 	
 		if(newslist.size() == 0){
 			return "fail";
